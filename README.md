@@ -236,3 +236,5 @@ pytest -v backend/tests/test_api.py
 ## 10. Medical Safety & Privacy Disclaimer
 
 MediMitra AI is an educational, personal health copilot designed to empower patients with clear, structured information. **It is not a medical diagnostic device.** It interprets laboratory values strictly against the reference intervals supplied on your reports and does not independently diagnose diseases, alter medication dosages, or replace the clinical judgment of a qualified medical practitioner.
+#   A I - - P O W E R E D - P E R S O N A L - H E A L T H - C O P I L O T  
+ 
