@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediMitra AI — Your Health Records. Clearly Understood.</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230d9488'><path d='M19 14V6c0-1.1-.9-2-2-2H7c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4v-2H7V6h10v8h2zm-7-4h-2v2h2v-2zm4 0h-2v2h2v-2zm-6 4H8v2h2v-2zm8 4h-3v-2h3v-3h2v3h3v2h-3v3h-2v-3z'/></svg>" />
+  <!-- Tailwind CSS CDN for instant zero-dependency rendering -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+          colors: {
+            brand: { teal: '#0d9488', tealLight: '#14b8a6', blue: '#0284c7' }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+  </style>
+</head>
+<body class="text-slate-900 antialiased min-h-screen flex flex-col">
+
+  <!-- TOP SYNTHETIC ABHA & DEMO BANNER -->
+  <div class="bg-slate-900 text-slate-300 text-xs py-1.5 px-4 flex flex-wrap items-center justify-between gap-2 border-b border-slate-800">
+    <div className="flex items-center space-x-2">
+      <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-teal-900/80 text-teal-300 border border-teal-700/60">
+        HacXLerate 2026
+      </span>
+      <span class="text-slate-400">Team TEKSQUADS</span>
+      <span class="text-slate-600 hidden sm:inline">•</span>
+      <span class="hidden sm:inline text-slate-400">Tagline: "Your Health Records. Clearly Understood."</span>
+    </div>
+    <div class="flex items-center space-x-3 text-[11px]">
+      <div class="inline-flex items-center space-x-1.5 bg-slate-800 px-2 py-0.5 rounded text-slate-300 border border-slate-700">
+        <span class="font-mono text-teal-300 font-medium">ABHA (Mock):</span>
+        <span class="text-slate-200">91-4582-9012-3456 (Synthetic Demo)</span>
+      </div>
+      <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-amber-950/70 text-amber-300 border border-amber-800/80">
+        DEMO MODE
+      </span>
+    </div>
+  </div>
+
+  <!-- NAVIGATION HEADER -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <!-- Brand Logo -->
+        <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('dashboard')">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-teal-600 to-cyan-700 flex items-center justify-center text-white shadow-md shadow-teal-500/20 font-black text-lg">
+            +
+          </div>
+          <div>
+            <div class="flex items-center space-x-1.5">
+              <span class="text-xl font-bold tracking-tight text-slate-900">MediMitra</span>
+              <span class="text-xs font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded bg-teal-50 text-teal-700 border border-teal-200">
+                AI
+              </span>
+            </div>
+            <p class="text-[11px] font-medium text-slate-500 hidden sm:block">Personal Health Copilot</p>
+          </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav class="hidden lg:flex items-center space-x-1">
+          <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn px-3 py-2 rounded-lg text-xs font-bold bg-teal-50 text-teal-800 border border-teal-200/80">Dashboard</button>
+          <button onclick="switchTab('upload')" id="nav-upload" class="nav-btn px-3 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900">Upload & Review</button>
+          <button onclick="switchTab('explainer')" id="nav-explainer" class="nav-btn px-3 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900">AI Explainer</button>
+          <button onclick="switchTab('comparison')" id="nav-comparison" class="nav-btn px-3 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900">Change Detector</button>
+          <button onclick="switchTab('timeline')" id="nav-timeline" class="nav-btn px-3 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900">Health Timeline</button>
+          <button onclick="switchTab('doctor-prep')" id="nav-doctor-prep" class="nav-btn px-3 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900">Doctor Prep</button>
+          <button onclick="switchTab('medications')" id="nav-medications" class="nav-btn px-3 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900">Med Planner</button>
+          <button onclick="switchTab('privacy-vault')" id="nav-privacy-vault" class="nav-btn px-3 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900">Privacy & FHIR</button>
+        </nav>
+
+        <!-- Language Switcher & Disclaimer -->
+        <div class="flex items-center space-x-2">
+          <div class="inline-flex items-center p-1 bg-slate-100 rounded-lg border border-slate-200">
+            <button onclick="setLanguage('en')" id="lang-en" class="px-2.5 py-1 text-xs font-extrabold rounded-md bg-white text-teal-700 shadow-xs">EN</button>
+            <button onclick="setLanguage('te')" id="lang-te" class="px-2.5 py-1 text-xs font-bold rounded-md text-slate-500 hover:text-slate-800">తెలుగు</button>
+          </div>
+          <button onclick="openModal('disclaimer-modal')" class="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Medical Disclaimer">
+            ⚠️
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN VIEWPORT CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- ======================================================== -->
+    <!-- TAB 1: DASHBOARD                                         -->
+    <!-- ======================================================== -->
+    <div id="tab-dashboard" class="tab-content active space-y-8">
+      <!-- Patient Profile Banner -->
+      <div class="p-6 bg-gradient-to-r from-teal-900 via-slate-900 to-slate-900 text-white rounded-3xl shadow-md border border-slate-800 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+        <div class="space-y-2">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/30">
+              SYNTHETIC DEMO PROFILE
+            </span>
+            <span class="text-xs font-mono text-slate-400">ABHA: 91-4582-9012-3456 (Synthetic Demo)</span>
+          </div>
+          <div class="flex items-center space-x-3">
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Ramesh Kumar</h1>
+            <span class="text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 border border-slate-700">48 Yrs • Male</span>
+          </div>
+          <p id="dashboard-welcome-text" class="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
+            Welcome back, Ramesh. Your multi-report comparison indicates positive shifts in Fasting Glucose and Total Cholesterol between October 2025 and January 2026.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <button onclick="switchTab('upload')" class="px-5 py-3 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs shadow-md transition-all">
+            Upload New Report
+          </button>
+          <button onclick="switchTab('comparison')" class="px-4 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs border border-slate-700 transition-all">
+            Compare Trends →
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI Metrics -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="p-5 bg-white rounded-2xl border border-slate-200/80 shadow-xs">
+          <div class="text-xs font-semibold text-slate-500">Saved Reports</div>
+          <div class="mt-2 text-2xl font-black text-slate-900">2 <span class="text-xs font-semibold text-teal-700">Processed</span></div>
+          <p class="text-[11px] text-slate-400 mt-1">Multi-page PDF & Scans</p>
+        </div>
+        <div class="p-5 bg-white rounded-2xl border border-slate-200/80 shadow-xs">
+          <div class="text-xs font-semibold text-slate-500">Tracked Test Biomarkers</div>
+          <div class="mt-2 text-2xl font-black text-slate-900">14 <span class="text-xs font-semibold text-blue-700">Provenanced</span></div>
+          <p class="text-[11px] text-slate-400 mt-1">Matched across visits</p>
+        </div>
+        <div class="p-5 bg-white rounded-2xl border border-slate-200/80 shadow-xs">
+          <div class="text-xs font-semibold text-slate-500">Prescription Meds</div>
+          <div class="mt-2 text-2xl font-black text-slate-900">3 <span class="text-xs font-semibold text-indigo-700">Active</span></div>
+          <p class="text-[11px] text-slate-400 mt-1">Verified Reminders</p>
+        </div>
+        <div class="p-5 bg-white rounded-2xl border border-slate-200/80 shadow-xs">
+          <div class="text-xs font-semibold text-slate-500">Smart Trust Score</div>
+          <div class="mt-2 text-2xl font-black text-emerald-700">96% <span class="text-xs font-semibold text-emerald-600">Verified</span></div>
+          <p class="text-[11px] text-slate-400 mt-1">Zero Hallucinations</p>
+        </div>
+      </div>
+
+      <!-- Key Biomarker Trend Gauges -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-sm font-bold text-slate-900 flex items-center space-x-1.5">
+              <span>❤️ Key Biomarker Trends & Target Zones (Feature 1)</span>
+            </h3>
+            <p class="text-xs text-slate-500 mt-0.5">Comparing October 2025 (Baseline) vs January 2026 (Follow-Up).</p>
+          </div>
+          <button onclick="switchTab('comparison')" class="text-xs font-bold text-teal-700 hover:text-teal-800">Detailed Change Detector →</button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="p-4 bg-white rounded-2xl border border-slate-200/80 shadow-xs space-y-2">
+            <div class="flex items-center justify-between text-xs font-bold">
+              <span>Fasting Blood Glucose</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] bg-amber-100 text-amber-800">Elevated</span>
+            </div>
+            <div class="flex items-baseline justify-between pt-1">
+              <span class="text-xl font-extrabold text-slate-900">118.0 mg/dL</span>
+              <span class="text-xs font-mono font-semibold text-teal-700">↘ -24.0 mg/dL</span>
+            </div>
+            <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+              <span>Prior: <strong class="text-slate-700">142.0 mg/dL</strong></span>
+              <span>Target: <strong class="text-slate-700">70 - 99 mg/dL</strong></span>
+            </div>
+          </div>
+
+          <div class="p-4 bg-white rounded-2xl border border-slate-200/80 shadow-xs space-y-2">
+            <div class="flex items-center justify-between text-xs font-bold">
+              <span>HbA1c (Glycated Hb)</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] bg-amber-100 text-amber-800">Moderate</span>
+            </div>
+            <div class="flex items-baseline justify-between pt-1">
+              <span class="text-xl font-extrabold text-slate-900">6.8 %</span>
+              <span class="text-xs font-mono font-semibold text-teal-700">↘ -0.6 %</span>
+            </div>
+            <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+              <span>Prior: <strong class="text-slate-700">7.4 %</strong></span>
+              <span>Target: <strong class="text-slate-700">4.0 - 5.6 %</strong></span>
+            </div>
+          </div>
+
+          <div class="p-4 bg-white rounded-2xl border border-slate-200/80 shadow-xs space-y-2">
+            <div class="flex items-center justify-between text-xs font-bold">
+              <span>Total Cholesterol</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-100 text-emerald-800">Optimal (Normalized)</span>
+            </div>
+            <div class="flex items-baseline justify-between pt-1">
+              <span class="text-xl font-extrabold text-slate-900">188.0 mg/dL</span>
+              <span class="text-xs font-mono font-semibold text-teal-700">↘ -40.0 mg/dL</span>
+            </div>
+            <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+              <span>Prior: <strong class="text-slate-700">228.0 mg/dL</strong></span>
+              <span>Target: <strong class="text-slate-700">< 200 mg/dL</strong></span>
+            </div>
+          </div>
+
+          <div class="p-4 bg-white rounded-2xl border border-slate-200/80 shadow-xs space-y-2">
+            <div class="flex items-center justify-between text-xs font-bold">
+              <span>Serum Creatinine</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-100 text-emerald-800">Normal Kidney</span>
+            </div>
+            <div class="flex items-baseline justify-between pt-1">
+              <span class="text-xl font-extrabold text-slate-900">0.96 mg/dL</span>
+              <span class="text-xs font-mono font-semibold text-slate-600">Stable</span>
+            </div>
+            <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+              <span>Prior: <strong class="text-slate-700">1.05 mg/dL</strong></span>
+              <span>Target: <strong class="text-slate-700">0.7 - 1.3 mg/dL</strong></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Action Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div onclick="switchTab('comparison')" class="p-5 bg-gradient-to-br from-teal-50 to-white rounded-2xl border border-teal-200/80 hover:border-teal-300 shadow-xs cursor-pointer transition-all">
+          <div class="text-teal-700 font-extrabold text-lg mb-1">⇄ Health Change Detector</div>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Examine matched tests between October 2025 and January 2026. Evaluates range-shift direction safely.
+          </p>
+        </div>
+        <div onclick="switchTab('explainer')" class="p-5 bg-gradient-to-br from-indigo-50 to-white rounded-2xl border border-indigo-200/80 hover:border-indigo-300 shadow-xs cursor-pointer transition-all">
+          <div class="text-indigo-700 font-extrabold text-lg mb-1">📖 Bilingual AI Explainer</div>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Read plain English & Telugu summaries. Click any test finding to inspect the exact source document line!
+          </p>
+        </div>
+        <div onclick="switchTab('doctor-prep')" class="p-5 bg-gradient-to-br from-cyan-50 to-white rounded-2xl border border-cyan-200/80 hover:border-cyan-300 shadow-xs cursor-pointer transition-all">
+          <div class="text-cyan-700 font-extrabold text-lg mb-1">📋 Doctor Visit Prep</div>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Review targeted questions regarding elevated blood sugar and cholesterol for your next appointment.
+          </p>
+        </div>
+      </div>
+
+      <!-- Recent Uploads Table -->
+      <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+          <h2 class="text-sm font-bold text-slate-900">Recent Medical Documents</h2>
+          <button onclick="switchTab('timeline')" class="text-xs font-bold text-teal-700 hover:text-teal-800">View Full Timeline →</button>
+        </div>
+        <div class="divide-y divide-slate-100">
+          <div class="p-4 sm:p-5 flex items-center justify-between">
+            <div>
+              <div class="flex items-center space-x-2">
+                <span class="text-xs font-bold text-slate-900">Aarogyam_Metabolic_FollowUp_Jan2026.pdf</span>
+                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">Synthetic Demo</span>
+              </div>
+              <div class="text-xs text-slate-500 mt-1">2026-01-20 • Laboratory Report • 7 Tests Tracked</div>
+            </div>
+            <button onclick="switchTab('explainer')" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-teal-50 text-slate-700 hover:text-teal-800 text-xs font-bold">
+              Explain Report
+            </button>
+          </div>
+          <div class="p-4 sm:p-5 flex items-center justify-between">
+            <div>
+              <div class="flex items-center space-x-2">
+                <span class="text-xs font-bold text-slate-900">Aarogyam_Comprehensive_Panel_Oct2025.pdf</span>
+                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">Synthetic Demo</span>
+              </div>
+              <div class="text-xs text-slate-500 mt-1">2025-10-15 • Laboratory Report • 7 Tests Tracked</div>
+            </div>
+            <button onclick="switchTab('explainer')" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-teal-50 text-slate-700 hover:text-teal-800 text-xs font-bold">
+              Explain Report
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 2: UPLOAD & REVIEW                                   -->
+    <!-- ======================================================== -->
+    <div id="tab-upload" class="tab-content space-y-6">
+      <div>
+        <h1 class="text-xl sm:text-2xl font-extrabold text-slate-900">Smart Report Upload & Field Verification</h1>
+        <p class="text-xs text-slate-500 mt-1">Upload PDF or scanned reports. Features 1-click synthetic samples and field-level user corrections.</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 bg-white rounded-2xl border-2 border-dashed border-slate-300 p-8 text-center flex flex-col items-center justify-center">
+          <div class="w-14 h-14 rounded-2xl bg-teal-50 text-teal-700 flex items-center justify-center text-2xl font-bold mb-3">⇪</div>
+          <h3 class="text-sm font-bold text-slate-800">Select or drop a medical document</h3>
+          <p class="text-xs text-slate-500 mt-1 max-w-sm">Supports PDF, JPG, and PNG files up to 15MB. Scanned and multi-page documents supported.</p>
+          <div class="mt-4 flex gap-3">
+            <button onclick="loadSample('glucose')" class="px-4 py-2.5 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold shadow-xs">
+              Instant Test: Sample Glycemic Panel
+            </button>
+            <button onclick="loadSample('cbc')" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold">
+              Sample CBC Report
+            </button>
+          </div>
+        </div>
+
+        <div class="p-6 bg-slate-900 text-white rounded-2xl flex flex-col justify-between">
+          <div>
+            <span class="text-teal-400 text-xs font-bold uppercase tracking-wider block mb-1">FEATURE 3 TRUST CHECK</span>
+            <h4 class="text-sm font-bold text-white">Provenance Preservation</h4>
+            <p class="text-xs text-slate-300 mt-2 leading-relaxed">
+              When user corrections are made, MediMitra AI preserves the original extracted OCR value in the database, separately recording the corrected value.
+            </p>
+          </div>
+          <div class="mt-4 p-3 bg-slate-800 rounded-xl text-teal-300 font-mono text-[11px]">
+            Original Value: 142.0 mg/dL<br>
+            User Correction: 135.0 mg/dL (Verified)
+          </div>
+        </div>
+      </div>
+
+      <!-- Field Review Table -->
+      <div id="upload-review-card" class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+        <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+          <h3 class="text-sm font-bold text-slate-900">Extracted Observations Review</h3>
+          <span class="text-xs font-bold text-teal-700">Verified OCR Output</span>
+        </div>
+        <table class="w-full text-left text-xs">
+          <thead class="bg-slate-50 text-slate-600 border-b border-slate-100">
+            <tr>
+              <th class="p-3 pl-5">Test Name</th>
+              <th class="p-3">Extracted Value</th>
+              <th class="p-3">Unit</th>
+              <th class="p-3">Reference Range</th>
+              <th class="p-3">Status</th>
+              <th class="p-3 pr-5 text-right">Action</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            <tr>
+              <td class="p-3 pl-5 font-bold">Fasting Blood Glucose</td>
+              <td class="p-3 font-mono text-slate-700">118.0</td>
+              <td class="p-3">mg/dL</td>
+              <td class="p-3">70 - 99 mg/dL</td>
+              <td class="p-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">HIGH</span></td>
+              <td class="p-3 pr-5 text-right"><button onclick="alert('Correction recorded! Original value preserved.')" class="text-teal-700 font-bold hover:underline">Correct</button></td>
+            </tr>
+            <tr>
+              <td class="p-3 pl-5 font-bold">HbA1c (Glycated Hemoglobin)</td>
+              <td class="p-3 font-mono text-slate-700">6.8</td>
+              <td class="p-3">%</td>
+              <td class="p-3">4.0 - 5.6 %</td>
+              <td class="p-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">HIGH</span></td>
+              <td class="p-3 pr-5 text-right"><button onclick="alert('Correction recorded! Original value preserved.')" class="text-teal-700 font-bold hover:underline">Correct</button></td>
+            </tr>
+            <tr>
+              <td class="p-3 pl-5 font-bold">Total Cholesterol</td>
+              <td class="p-3 font-mono text-slate-700">188.0</td>
+              <td class="p-3">mg/dL</td>
+              <td class="p-3">< 200 mg/dL</td>
+              <td class="p-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">NORMAL</span></td>
+              <td class="p-3 pr-5 text-right"><button onclick="alert('Correction recorded! Original value preserved.')" class="text-teal-700 font-bold hover:underline">Correct</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 3: AI EXPLAINER                                      -->
+    <!-- ======================================================== -->
+    <div id="tab-explainer" class="tab-content space-y-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-xl sm:text-2xl font-extrabold text-slate-900">Bilingual AI Health Explainer</h1>
+          <p class="text-xs text-slate-500 mt-1">Plain English and Telugu translations with 100% traceable evidence excerpts.</p>
+        </div>
+      </div>
+
+      <!-- Explainer Container -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+        <div class="p-5 bg-gradient-to-r from-teal-50 to-white border-b border-slate-100 flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="text-xs font-bold text-teal-800">Patient-Friendly Clinical Explanation</span>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200">Demo Intelligence Engine</span>
+          </div>
+          <span class="text-xs text-slate-400">Report Date: 2026-01-20</span>
+        </div>
+
+        <div id="explainer-text" class="p-6 text-sm text-slate-700 leading-relaxed whitespace-pre-line">
+          Hello Ramesh Kumar, your Follow-up Metabolic Panel dated 2026-01-20 shows encouraging numerical trends. Fasting Blood Glucose has moved from 142.0 down to 118.0 mg/dL (closer to normal 70-99). HbA1c improved from 7.4% down to 6.8%. Total Cholesterol has returned into the normal range at 188.0 mg/dL (< 200). Serum Creatinine remains healthy at 0.96 mg/dL.
+        </div>
+      </div>
+
+      <!-- Evidence-Linked Findings Grid -->
+      <div class="space-y-3">
+        <h3 class="text-sm font-bold text-slate-900">Evidence-Linked Key Findings (Feature 2)</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div onclick="showEvidence('Fasting Blood Glucose', '118.0 mg/dL', 'Fasting Blood Glucose 118.0 mg/dL 70.0 - 99.0', '70 - 99 mg/dL')" class="p-4 bg-white rounded-xl border border-slate-200 hover:border-teal-400 shadow-xs cursor-pointer transition-all">
+            <div class="flex justify-between text-xs font-bold mb-1">
+              <span>Fasting Blood Glucose</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] bg-amber-100 text-amber-800">Elevated</span>
+            </div>
+            <p class="text-xs text-slate-600">Decreased from 142.0 to 118.0 mg/dL, shifting closer to reference range (70-99).</p>
+            <div class="mt-3 text-[11px] text-teal-700 font-bold">View Source Excerpt →</div>
+          </div>
+
+          <div onclick="showEvidence('HbA1c (Glycated Hemoglobin)', '6.8 %', 'HbA1c (Glycated Hemoglobin) 6.8 % 4.0 - 5.6', '4.0 - 5.6 %')" class="p-4 bg-white rounded-xl border border-slate-200 hover:border-teal-400 shadow-xs cursor-pointer transition-all">
+            <div class="flex justify-between text-xs font-bold mb-1">
+              <span>HbA1c (Glycated Hemoglobin)</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] bg-amber-100 text-amber-800">Elevated</span>
+            </div>
+            <p class="text-xs text-slate-600">Decreased from 7.4% to 6.8%, indicating improved 3-month glycemic stability.</p>
+            <div class="mt-3 text-[11px] text-teal-700 font-bold">View Source Excerpt →</div>
+          </div>
+
+          <div onclick="showEvidence('Total Cholesterol', '188.0 mg/dL', 'Total Cholesterol 188.0 mg/dL < 200.0', '< 200 mg/dL')" class="p-4 bg-white rounded-xl border border-slate-200 hover:border-teal-400 shadow-xs cursor-pointer transition-all">
+            <div class="flex justify-between text-xs font-bold mb-1">
+              <span>Total Cholesterol</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-100 text-emerald-800">Normal</span>
+            </div>
+            <p class="text-xs text-slate-600">Normalized at 188.0 mg/dL, safely within recommended limits (< 200 mg/dL).</p>
+            <div class="mt-3 text-[11px] text-teal-700 font-bold">View Source Excerpt →</div>
+          </div>
+
+          <div onclick="showEvidence('Serum Creatinine', '0.96 mg/dL', 'Serum Creatinine 0.96 mg/dL 0.7 - 1.3', '0.7 - 1.3 mg/dL')" class="p-4 bg-white rounded-xl border border-slate-200 hover:border-teal-400 shadow-xs cursor-pointer transition-all">
+            <div class="flex justify-between text-xs font-bold mb-1">
+              <span>Serum Creatinine</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-100 text-emerald-800">Normal</span>
+            </div>
+            <p class="text-xs text-slate-600">Healthy kidney filtration biomarker stably preserved at 0.96 mg/dL.</p>
+            <div class="mt-3 text-[11px] text-teal-700 font-bold">View Source Excerpt →</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 4: CHANGE DETECTOR                                   -->
+    <!-- ======================================================== -->
+    <div id="tab-comparison" class="tab-content space-y-6">
+      <div>
+        <h1 class="text-xl sm:text-2xl font-extrabold text-slate-900">Health Change Detector (Feature 1)</h1>
+        <p class="text-xs text-slate-500 mt-1">Comparing Baseline (2025-10-15) with Follow-Up (2026-01-20). Validates unit compatibility before comparison.</p>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-slate-50 text-slate-600 border-b border-slate-100 font-semibold">
+            <tr>
+              <th class="p-3.5 pl-5">Test Name</th>
+              <th class="p-3.5">Prior (Oct 2025)</th>
+              <th class="p-3.5">Recent (Jan 2026)</th>
+              <th class="p-3.5">Absolute Shift</th>
+              <th class="p-3.5">Reference Range</th>
+              <th class="p-3.5">Range Shift Status</th>
+              <th class="p-3.5 pr-5">Clinical Note</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            <tr>
+              <td class="p-3.5 pl-5 font-bold">Fasting Blood Glucose</td>
+              <td class="p-3.5 font-mono">142.0 mg/dL</td>
+              <td class="p-3.5 font-mono font-bold text-teal-900">118.0 mg/dL</td>
+              <td class="p-3.5 font-mono font-bold text-teal-700">-24.0 mg/dL (-16.9%)</td>
+              <td class="p-3.5 text-slate-500">70 - 99 mg/dL</td>
+              <td class="p-3.5"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-100 text-teal-800">CLOSER TO NORMAL</span></td>
+              <td class="p-3.5 pr-5 text-slate-600">Moved closer to upper reference limit (99 mg/dL).</td>
+            </tr>
+            <tr>
+              <td class="p-3.5 pl-5 font-bold">HbA1c (Glycated Hb)</td>
+              <td class="p-3.5 font-mono">7.4 %</td>
+              <td class="p-3.5 font-mono font-bold text-teal-900">6.8 %</td>
+              <td class="p-3.5 font-mono font-bold text-teal-700">-0.6 % (-8.1%)</td>
+              <td class="p-3.5 text-slate-500">4.0 - 5.6 %</td>
+              <td class="p-3.5"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-100 text-teal-800">CLOSER TO NORMAL</span></td>
+              <td class="p-3.5 pr-5 text-slate-600">Shifted closer to normal limit, reflecting glycemic stability.</td>
+            </tr>
+            <tr>
+              <td class="p-3.5 pl-5 font-bold">Total Cholesterol</td>
+              <td class="p-3.5 font-mono">228.0 mg/dL</td>
+              <td class="p-3.5 font-mono font-bold text-teal-900">188.0 mg/dL</td>
+              <td class="p-3.5 font-mono font-bold text-teal-700">-40.0 mg/dL (-17.5%)</td>
+              <td class="p-3.5 text-slate-500">< 200 mg/dL</td>
+              <td class="p-3.5"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">WITHIN NORMAL</span></td>
+              <td class="p-3.5 pr-5 text-slate-600">Shifted safely into standard normal interval.</td>
+            </tr>
+            <tr>
+              <td class="p-3.5 pl-5 font-bold">Serum Creatinine</td>
+              <td class="p-3.5 font-mono">1.05 mg/dL</td>
+              <td class="p-3.5 font-mono font-bold text-teal-900">0.96 mg/dL</td>
+              <td class="p-3.5 font-mono font-bold text-slate-600">-0.09 mg/dL (-8.6%)</td>
+              <td class="p-3.5 text-slate-500">0.7 - 1.3 mg/dL</td>
+              <td class="p-3.5"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">WITHIN NORMAL</span></td>
+              <td class="p-3.5 pr-5 text-slate-600">Remains healthy and stable within standard limits.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200 text-amber-900 text-xs">
+        ⚠️ <strong>Medical Safety Guardrail:</strong> MediMitra AI tracks numerical laboratory changes for informational trend awareness. Numerical improvements do not independently prove clinical recovery or remission. Always consult your attending clinician.
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 5: TIMELINE                                          -->
+    <!-- ======================================================== -->
+    <div id="tab-timeline" class="tab-content space-y-6">
+      <div>
+        <h1 class="text-xl sm:text-2xl font-extrabold text-slate-900">Personal Health Memory & Timeline</h1>
+        <p class="text-xs text-slate-500 mt-1">Chronological history with search, category filtering, and safe privacy-first deletion.</p>
+      </div>
+
+      <div class="space-y-4">
+        <div class="p-5 bg-white rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
+          <div>
+            <div class="text-xs font-mono font-bold text-teal-700">2026-01-20 • Laboratory Report</div>
+            <h3 class="text-sm font-bold text-slate-900 mt-0.5">Aarogyam_Metabolic_FollowUp_Jan2026.pdf</h3>
+            <p class="text-xs text-slate-500 mt-1">Aarogyam Clinical Pathology • 7 Tests Tracked • Trust Score 96%</p>
+          </div>
+          <button onclick="switchTab('explainer')" class="px-4 py-2 bg-teal-50 text-teal-800 rounded-xl text-xs font-bold hover:bg-teal-100">
+            View Explainer
+          </button>
+        </div>
+
+        <div class="p-5 bg-white rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
+          <div>
+            <div class="text-xs font-mono font-bold text-teal-700">2025-10-15 • Laboratory Report</div>
+            <h3 class="text-sm font-bold text-slate-900 mt-0.5">Aarogyam_Comprehensive_Panel_Oct2025.pdf</h3>
+            <p class="text-xs text-slate-500 mt-1">Aarogyam Clinical Pathology • 7 Tests Tracked • Trust Score 92%</p>
+          </div>
+          <button onclick="switchTab('explainer')" class="px-4 py-2 bg-teal-50 text-teal-800 rounded-xl text-xs font-bold hover:bg-teal-100">
+            View Explainer
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 6: DOCTOR PREP                                       -->
+    <!-- ======================================================== -->
+    <div id="tab-doctor-prep" class="tab-content space-y-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-xl sm:text-2xl font-extrabold text-slate-900">Doctor Visit Prep Assistant (Feature 6)</h1>
+          <p class="text-xs text-slate-500 mt-1">Clinician discussion checklist derived from your elevated results and medication notes.</p>
+        </div>
+        <button onclick="window.print()" class="px-4 py-2 bg-slate-100 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-200">
+          Print Prep Sheet
+        </button>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-xs divide-y divide-slate-100">
+        <div class="p-4 flex items-start space-x-3">
+          <input type="checkbox" class="mt-1 w-4 h-4 text-teal-600 rounded">
+          <div>
+            <span class="text-xs font-bold text-slate-800">My Fasting Blood Glucose was 142 mg/dL in October and 118 mg/dL in January. What target range should I aim for next?</span>
+            <div class="text-[11px] text-slate-500 mt-1">Recorded on 2026-01-20 follow-up • Abnormal Lab Follow-up</div>
+          </div>
+        </div>
+
+        <div class="p-4 flex items-start space-x-3">
+          <input type="checkbox" class="mt-1 w-4 h-4 text-teal-600 rounded">
+          <div>
+            <span class="text-xs font-bold text-slate-800">My HbA1c is 6.8%. Is my current dose of Metformin 500mg daily sufficient, or do you recommend any adjustments?</span>
+            <div class="text-[11px] text-slate-500 mt-1">Recorded on 2026-01-20 follow-up • Medication Clarification</div>
+          </div>
+        </div>
+
+        <div class="p-4 flex items-start space-x-3">
+          <input type="checkbox" class="mt-1 w-4 h-4 text-teal-600 rounded" checked>
+          <div>
+            <span class="text-xs font-bold text-slate-400 line-through">Regarding Multivitamin: Could you please clarify the specific dosage, duration, and whether it is necessary?</span>
+            <div class="text-[11px] text-slate-400 mt-1">Prescription instruction was flagged as incomplete • Medication Clarification</div>
+          </div>
+        </div>
+
+        <div class="p-4 flex items-start space-x-3">
+          <input type="checkbox" class="mt-1 w-4 h-4 text-teal-600 rounded">
+          <div>
+            <span class="text-xs font-bold text-slate-800">When should we schedule our next follow-up panel to verify lipid and glucose trends?</span>
+            <div class="text-[11px] text-slate-500 mt-1">Long-term monitoring strategy • Preventive Care</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 7: MEDICATION PLANNER                                -->
+    <!-- ======================================================== -->
+    <div id="tab-medications" class="tab-content space-y-6">
+      <div>
+        <h1 class="text-xl sm:text-2xl font-extrabold text-slate-900">Prescription-to-Reminder Planner (Feature 7)</h1>
+        <p class="text-xs text-slate-500 mt-1">Review extracted prescription instructions. User verification required before activating reminder schedules.</p>
+      </div>
+
+      <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200 text-amber-900 text-xs">
+        ⚠️ <strong>Smart Trust Check:</strong> Tab Multivitamin is missing explicit dosage strength and duration. In accordance with medical safety rules, MediMitra AI never invents missing clinical details.
+      </div>
+
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-xs divide-y divide-slate-100">
+        <div class="p-5 flex items-center justify-between">
+          <div>
+            <div class="flex items-center space-x-2">
+              <span class="text-sm font-bold text-slate-900">Metformin</span>
+              <span class="text-xs font-mono font-bold text-slate-600">500 mg</span>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-teal-50 text-teal-800">Verified</span>
+            </div>
+            <div class="text-xs text-slate-500 mt-1">ONCE DAILY • After dinner • Scheduled Alert: <strong>08:30 PM</strong></div>
+          </div>
+          <span class="text-xs font-bold text-teal-700">✓ Reminder Active</span>
+        </div>
+
+        <div class="p-5 flex items-center justify-between">
+          <div>
+            <div class="flex items-center space-x-2">
+              <span class="text-sm font-bold text-slate-900">Atorvastatin</span>
+              <span class="text-xs font-mono font-bold text-slate-600">10 mg</span>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-teal-50 text-teal-800">Verified</span>
+            </div>
+            <div class="text-xs text-slate-500 mt-1">ONCE DAILY • At bedtime • Scheduled Alert: <strong>09:30 PM</strong></div>
+          </div>
+          <span class="text-xs font-bold text-teal-700">✓ Reminder Active</span>
+        </div>
+
+        <div class="p-5 flex items-center justify-between">
+          <div>
+            <div class="flex items-center space-x-2">
+              <span class="text-sm font-bold text-slate-900">Multivitamin</span>
+              <span class="text-xs text-amber-700 font-semibold">Unspecified Dose</span>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800">Needs Verification</span>
+            </div>
+            <div class="text-xs text-slate-500 mt-1">DAILY • As directed • Missing duration</div>
+          </div>
+          <button onclick="alert('Please consult clinician before setting reminder.')" class="px-3 py-1.5 rounded-lg bg-slate-100 text-xs font-bold text-slate-600 hover:bg-slate-200">
+            Verify First
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 8: PRIVACY VAULT & ABDM                              -->
+    <!-- ======================================================== -->
+    <div id="tab-privacy-vault" class="tab-content space-y-6">
+      <div>
+        <h1 class="text-xl sm:text-2xl font-extrabold text-slate-900">Privacy Vault & ABDM Architecture</h1>
+        <p class="text-xs text-slate-500 mt-1">Ephemeral document processing, permanent data purge controls, and FHIR R4 interoperability standard.</p>
+      </div>
+
+      <!-- FHIR Viewer -->
+      <div class="bg-slate-900 text-slate-100 rounded-2xl p-6 shadow-xs space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-sm font-bold text-white">FHIR R4 Standardized Bundle (ABDM Demonstration)</h3>
+            <p class="text-xs text-slate-400">Structured resources: Patient, DiagnosticReport, Observation, and MedicationRequest.</p>
+          </div>
+          <button onclick="alert('FHIR JSON copied to clipboard!')" class="px-3 py-1.5 bg-slate-800 text-teal-300 text-xs font-mono rounded hover:bg-slate-700">
+            Copy FHIR JSON
+          </button>
+        </div>
+        <div class="p-4 bg-slate-950 rounded-xl font-mono text-xs text-teal-300 max-h-60 overflow-y-auto">
+<pre>{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "identifier": [{ "system": "https://healthid.ndhm.gov.in (Synthetic)", "value": "91-4582-9012-3456" }],
+        "name": [{ "text": "Ramesh Kumar" }],
+        "gender": "male"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "DiagnosticReport",
+        "status": "final",
+        "code": { "text": "Laboratory Report" }
+      }
+    }
+  ]
+}</pre>
+        </div>
+      </div>
+
+      <!-- Vault Purge -->
+      <div class="p-6 bg-rose-50 rounded-2xl border border-rose-200 flex items-center justify-between">
+        <div>
+          <h4 class="text-sm font-bold text-rose-950">Patient Vault Reset</h4>
+          <p class="text-xs text-rose-800 mt-0.5">Permanently purge all uploaded reports and restore clean synthetic demo records.</p>
+        </div>
+        <button onclick="alert('Vault reset successfully!')" class="px-4 py-2.5 bg-rose-700 text-white rounded-xl text-xs font-bold hover:bg-rose-800">
+          Purge All Records
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- MODAL: MEDICAL DISCLAIMER -->
+  <div id="disclaimer-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <h3 class="text-sm font-bold text-amber-800 flex items-center space-x-2">
+          <span>⚠️ Medical Safety & Privacy Notice</span>
+        </h3>
+        <button onclick="closeModal('disclaimer-modal')" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
+      </div>
+      <div class="mt-4 space-y-3 text-xs text-slate-600 leading-relaxed">
+        <p class="p-3 bg-amber-50 rounded-xl text-amber-900 border border-amber-200 font-medium">
+          MediMitra AI is an educational personal health assistant. It is <strong>not a medical diagnostic device</strong>. It interprets laboratory values strictly against the reference ranges supplied on your reports and never independently diagnoses conditions or prescribes treatments.
+        </p>
+        <ul class="list-disc pl-5 space-y-1">
+          <li><strong>Ephemeral Processing:</strong> Raw files processed in-memory and not permanently retained.</li>
+          <li><strong>Evidence Linking:</strong> Every claim links back to the exact source text.</li>
+          <li><strong>ABDM Model:</strong> Uses mock synthetic ABHA IDs for demonstration.</li>
+        </ul>
+      </div>
+      <div class="mt-5 flex justify-end">
+        <button onclick="closeModal('disclaimer-modal')" class="px-5 py-2 bg-teal-700 text-white text-xs font-bold rounded-xl hover:bg-teal-800">
+          I Understand & Agree
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: EVIDENCE VIEWER -->
+  <div id="evidence-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <h3 class="text-sm font-bold text-teal-800">Evidence-Linked Source Excerpt (Feature 2)</h3>
+        <button onclick="closeModal('evidence-modal')" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
+      </div>
+      <div class="mt-4 space-y-3">
+        <div>
+          <span class="text-[10px] text-slate-400 font-bold uppercase">Extracted Parameter</span>
+          <h4 id="ev-title" class="text-base font-bold text-slate-800">Fasting Blood Glucose</h4>
+          <p id="ev-val" class="text-xs text-slate-600 mt-0.5">118.0 mg/dL</p>
+        </div>
+        <div class="p-3.5 bg-slate-900 text-teal-300 font-mono text-xs rounded-xl border border-slate-800">
+          <div class="text-[10px] text-slate-400 pb-1 mb-1 border-b border-slate-800">SOURCE OCR TEXT (PAGE 1)</div>
+          <p id="ev-snippet">"Fasting Blood Glucose 118.0 mg/dL 70.0 - 99.0"</p>
+        </div>
+        <div class="p-2.5 bg-slate-50 rounded-xl text-xs flex justify-between">
+          <span class="text-slate-500">Reference Interval</span>
+          <span id="ev-ref" class="font-bold text-slate-800">70 - 99 mg/dL</span>
+        </div>
+      </div>
+      <div class="mt-5 flex justify-end">
+        <button onclick="closeModal('evidence-modal')" class="px-4 py-2 bg-slate-100 text-slate-700 text-xs font-bold rounded-xl hover:bg-slate-200">
+          Close Excerpt
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="bg-white border-t border-slate-200 mt-auto py-6 text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="flex items-center space-x-2">
+        <span class="font-bold text-slate-800">MediMitra AI</span>
+        <span>—</span>
+        <span>Your Health Records. Clearly Understood.</span>
+      </div>
+      <div class="flex items-center space-x-4">
+        <span>HacXLerate 2026 | Team TEKSQUADS</span>
+        <span>•</span>
+        <button onclick="openModal('disclaimer-modal')" class="hover:text-teal-700 underline">Medical Disclaimer & Privacy</button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- INTERACTIVE LOGIC SCRIPT -->
+  <script>
+    let currentLang = 'en';
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('bg-teal-50', 'text-teal-800', 'border', 'border-teal-200/80');
+        btn.classList.add('text-slate-600');
+      });
+
+      const target = document.getElementById('tab-' + tabId);
+      if (target) target.classList.add('active');
+
+      const navBtn = document.getElementById('nav-' + tabId);
+      if (navBtn) {
+        navBtn.classList.remove('text-slate-600');
+        navBtn.classList.add('bg-teal-50', 'text-teal-800', 'border', 'border-teal-200/80');
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      const enBtn = document.getElementById('lang-en');
+      const teBtn = document.getElementById('lang-te');
+      const explainerText = document.getElementById('explainer-text');
+      const welcomeText = document.getElementById('dashboard-welcome-text');
+
+      if (lang === 'te') {
+        teBtn.classList.add('bg-teal-700', 'text-white', 'shadow-xs');
+        teBtn.classList.remove('text-slate-500');
+        enBtn.classList.remove('bg-white', 'text-teal-700', 'shadow-xs');
+        enBtn.classList.add('text-slate-500');
+
+        welcomeText.innerText = "నమస్కారం రమేష్ గారూ. మీ అక్టోబర్ 2025 మరియు జనవరి 2026 నివేదికల ప్రకారం రక్తంలో చక్కెర మరియు కొలెస్ట్రాల్ స్థాయిలు క్రమంగా మెరుగుపడుతున్నాయి.";
+        explainerText.innerText = `నమస్కారం Ramesh Kumar గారూ, మీ జనవరి 2026 ఫాలో-అప్ నివేదికలో సానుకూల మార్పులు నమోదయ్యాయి:
+
+• Fasting Blood Glucose: గతంలో 142.0 నుండి తగ్గి ప్రస్తుతం 118.0 mg/dL కు చేరుకుంది (సాధారణ పరిమితి 70 - 99 mg/dL కి దగ్గరగా వచ్చింది).
+• HbA1c (సగటు చక్కెర): 7.4% నుండి 6.8% కు తగ్గింది.
+• Total Cholesterol: 188.0 mg/dL గా నమోదై సాధారణ పరిధిలోకి (< 200 mg/dL) వచ్చింది.
+• Serum Creatinine (కిడ్నీ పనితీరు): 0.96 mg/dL తో పూర్తి ఆరోగ్యంగా ఉంది.
+
+సూచించిన మందులు:
+• Metformin (500 mg): రాత్రి భోజనం తర్వాత ఒకసారి.
+• Atorvastatin (10 mg): రాత్రి పడుకునే ముందు ఒకసారి.
+
+⚠️ గమనిక: ఇది కేవలం సమాచార ప్రయోజనాల కొరకు మాత్రమే. ఏదైనా మార్పుల కొరకు మీ వైద్యుడిని సంప్రదించండి.`;
+      } else {
+        enBtn.classList.add('bg-white', 'text-teal-700', 'shadow-xs');
+        enBtn.classList.remove('text-slate-500');
+        teBtn.classList.remove('bg-teal-700', 'text-white', 'shadow-xs');
+        teBtn.classList.add('text-slate-500');
+
+        welcomeText.innerText = "Welcome back, Ramesh. Your multi-report comparison indicates positive shifts in Fasting Glucose and Total Cholesterol between October 2025 and January 2026.";
+        explainerText.innerText = `Hello Ramesh Kumar, your Follow-up Metabolic Panel dated 2026-01-20 shows encouraging numerical trends:
+
+• Fasting Blood Glucose has moved from 142.0 down to 118.0 mg/dL (closer to the normal interval of 70-99 mg/dL).
+• HbA1c improved from 7.4% down to 6.8%, reflecting improved 3-month glycemic stability.
+• Total Cholesterol normalized at 188.0 mg/dL (< 200 mg/dL).
+• Serum Creatinine remains healthy at 0.96 mg/dL (normal: 0.7 - 1.3 mg/dL).
+
+Prescriptions Recorded:
+• Metformin 500mg Once Daily after dinner
+• Atorvastatin 10mg Once Daily at bedtime
+
+Note: Numerical shifts do not replace a physician's clinical assessment. Please discuss these findings with your healthcare provider.`;
+      }
+    }
+
+    function showEvidence(title, val, snippet, ref) {
+      document.getElementById('ev-title').innerText = title;
+      document.getElementById('ev-val').innerText = val;
+      document.getElementById('ev-snippet').innerText = '"' + snippet + '"';
+      document.getElementById('ev-ref').innerText = ref;
+      openModal('evidence-modal');
+    }
+
+    function openModal(id) {
+      document.getElementById(id).classList.remove('hidden');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    function loadSample(type) {
+      alert('Sample ' + (type === 'glucose' ? 'Glycemic & Lipid Panel' : 'CBC Report') + ' loaded and extracted successfully!');
+      switchTab('explainer');
+    }
+  </script>
+</body>
+</html>

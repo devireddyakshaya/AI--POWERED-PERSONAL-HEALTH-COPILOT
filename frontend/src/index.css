@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-[#f8fafc] text-[#0f172a] antialiased selection:bg-blue-100 selection:text-blue-900;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Accessibility preferences (toggled by AppSettingsProvider on <html>)
+   --------------------------------------------------------------------------- */
+
+html.a11y-large-text {
+  font-size: 118%;
+}
+
+html.a11y-contrast {
+  filter: contrast(1.18) saturate(1.08);
+}
+
+html.a11y-contrast body {
+  background: #ffffff;
+}
+
+html.a11y-reduce-motion *,
+html.a11y-reduce-motion *::before,
+html.a11y-reduce-motion *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Simple Mode hides optional detail to reduce clutter. */
+html.a11y-simple .hide-in-simple {
+  display: none !important;
+}
+
+html.a11y-simple .a11y-tap-target {
+  min-height: 3.25rem;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}

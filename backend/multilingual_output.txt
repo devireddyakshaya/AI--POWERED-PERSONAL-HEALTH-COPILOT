@@ -1,0 +1,6 @@
+en: summary_len=598, language=en, findings=2, questions=1
+te: summary_len=558, language=te, findings=2, questions=1
+hi: summary_len=513, language=hi, findings=2, questions=1
+ta: summary_len=652, language=ta, findings=2, questions=1
+kn: summary_len=552, language=kn, findings=2, questions=1
+ml: summary_len=584, language=ml, findings=2, questions=1
