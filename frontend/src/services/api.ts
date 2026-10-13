@@ -10,7 +10,7 @@ import {
   VoiceAnswer
 } from '../types';
 
-const API_BASE = '/api';
+const API_BASE = 'https://your-render-backend-url.onrender.com/api';
 
 /**
  * MediMitra AI API client.
