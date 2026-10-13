@@ -16,6 +16,7 @@ BACKEND_PORT = int(os.getenv("BACKEND_PORT", "8000"))
 DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{BASE_DIR / 'MediMitra.db'}")
 EPHEMERAL_PROCESSING_ONLY = os.getenv("EPHEMERAL_PROCESSING_ONLY", "true").lower() in ("true", "1", "yes")
 TESSERACT_CMD = os.getenv("TESSERACT_CMD", "")
+NVIDIA_MODEL = os.getenv("NVIDIA_MODEL", "meta/llama-3.1-70b-instruct").strip()
 
 # Directory for ephemeral or temporary file processing
 UPLOAD_DIR = BASE_DIR / "uploads"

@@ -1,13 +1,16 @@
 """
 AI Health Explainer integration for MediMitra AI.
-Uses Google Gemini API when configured, with high-fidelity deterministic
+Uses Google Gemini API or NVIDIA NIM when configured, with high-fidelity
 DEMO MODE fallback when running offline or without API keys.
 Strictly adheres to medical safety rules (no independent diagnoses, informational disclaimer).
 """
 import json
 import logging
+import os
 from typing import Dict, Any, List
-from backend.app.config import GEMINI_API_KEY, is_demo_mode
+from urllib import request, error
+
+from backend.app.config import GEMINI_API_KEY, is_demo_mode, NVIDIA_MODEL
 from backend.app.services.telugu_service import TeluguHealthTranslator
 
 logger = logging.getLogger(__name__)
@@ -61,6 +64,58 @@ Return a valid JSON object matching this schema:
 
 class AIService:
     @staticmethod
+    def _uses_nvidia_api(api_key: str | None) -> bool:
+        return bool(api_key and api_key.startswith("nvapi-"))
+
+    @staticmethod
+    def _build_nvidia_payload(
+        patient_name: str,
+        document_type: str,
+        document_date: str,
+        observations: List[Dict[str, Any]],
+        medications: List[Dict[str, Any]],
+        raw_text: str
+    ) -> Dict[str, Any]:
+        user_prompt = f"""
+Patient Name: {patient_name}
+Document Type: {document_type}
+Document Date: {document_date}
+
+EXTRACTED OBSERVATIONS:
+{json.dumps(observations, indent=2)}
+
+EXTRACTED MEDICATIONS:
+{json.dumps(medications, indent=2)}
+
+SOURCE TEXT EXCERPT:
+{raw_text[:2000]}
+
+Generate the structured JSON response following the system instructions.
+"""
+        return {
+            "model": NVIDIA_MODEL,
+            "messages": [
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": user_prompt},
+            ],
+            "temperature": 0.2,
+            "max_tokens": 2000,
+        }
+
+    @staticmethod
+    def _extract_nvidia_response_content(payload: Dict[str, Any]) -> str:
+        choices = payload.get("choices", [])
+        if not choices:
+            raise ValueError("NVIDIA API response had no choices.")
+        message = choices[0].get("message", {})
+        content = message.get("content", "")
+        if isinstance(content, list):
+            return "".join(part.get("text", "") for part in content if isinstance(part, dict))
+        if isinstance(content, str):
+            return content
+        return json.dumps(content)
+
+    @staticmethod
     def generate_health_summary(
         patient_name: str,
         document_type: str,
@@ -73,6 +128,12 @@ class AIService:
         Generates structured medical explanations in English & Telugu with evidence linking.
         Falls back seamlessly to high-fidelity synthetic engine in Demo Mode.
         """
+        if not is_demo_mode() and AIService._uses_nvidia_api(GEMINI_API_KEY):
+            try:
+                return AIService._call_nvidia_api(patient_name, document_type, document_date, observations, medications, raw_text)
+            except Exception as e:
+                logger.error(f"NVIDIA API call failed, switching to deterministic fallback: {e}")
+
         if not is_demo_mode() and GEMINI_CLIENT is not None:
             try:
                 return AIService._call_gemini_api(patient_name, document_type, document_date, observations, medications, raw_text)
@@ -115,6 +176,51 @@ Generate the structured JSON response following the system instructions.
 """
         response = model.generate_content([SYSTEM_PROMPT, user_prompt])
         parsed = json.loads(response.text)
+        parsed["is_demo_generated"] = False
+        return parsed
+
+    @staticmethod
+    def _call_nvidia_api(
+        patient_name: str,
+        document_type: str,
+        document_date: str,
+        observations: List[Dict[str, Any]],
+        medications: List[Dict[str, Any]],
+        raw_text: str
+    ) -> Dict[str, Any]:
+        """Calls the NVIDIA NIM chat-completions endpoint using an nvapi key."""
+        payload = AIService._build_nvidia_payload(
+            patient_name, document_type, document_date, observations, medications, raw_text
+        )
+        request_data = json.dumps(payload).encode("utf-8")
+        req = request.Request(
+            "https://integrate.api.nvidia.com/v1/chat/completions",
+            data=request_data,
+            headers={
+                "Authorization": f"Bearer {GEMINI_API_KEY}",
+                "Content-Type": "application/json",
+            },
+            method="POST",
+        )
+
+        try:
+            with request.urlopen(req, timeout=60) as resp:
+                body = json.loads(resp.read().decode("utf-8"))
+        except error.HTTPError as exc:
+            error_text = exc.read().decode("utf-8", errors="replace")
+            raise RuntimeError(f"NVIDIA API error: {error_text}") from exc
+
+        response_text = AIService._extract_nvidia_response_content(body)
+        try:
+            parsed = json.loads(response_text)
+        except json.JSONDecodeError:
+            parsed = {
+                "english_summary": response_text,
+                "telugu_summary": "",
+                "key_findings": [],
+                "questions_for_doctor": [],
+                "uncertainty_notes": "This response was generated by NVIDIA NIM and should be reviewed with the patient’s clinician.",
+            }
         parsed["is_demo_generated"] = False
         return parsed
 
